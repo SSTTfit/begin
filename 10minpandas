@@ -1,0 +1,203 @@
+pandas.date_range(start=None, end=None, periods=None, freq=’D’, tz=None, normalize=False, name=None, closed=None, **kwargs)
+
+参数
+
+start：string或datetime-like，默认值是None，表示日期的起点。
+
+end：string或datetime-like，默认值是None，表示日期的终点。
+
+periods：integer或None，默认值是None，表示你要从这个函数产生多少个日期索引值；如果是None的话，那么start和end必须不能为None。
+
+freq：string或DateOffset，默认值是’D’，表示以自然日为单位，这个参数用来指定计时单位，比如’5H’表示每隔5个小时计算一次。
+
+tz：string或None，表示时区，例如：’Asia/Hong_Kong’。
+
+normalize：bool，默认值为False，如果为True的话，那么在产生时间索引值之前会先把start和end都转化为当日的午夜0点。
+
+name：str，默认值为None，给返回的时间索引指定一个名字。
+
+closed：string或者None，默认值为None，表示start和end这个区间端点是否包含在区间内，可以有三个值，’left’表示左闭右开区间，’right’表示左开右闭区间，None表示两边都是闭区间。
+
+
+In [51]: df
+Out[51]: 
+                   A         B         C  D    F
+2013-01-01  0.000000  0.000000 -1.509059  5  NaN
+2013-01-02  1.212112 -0.173215  0.119209  5  1.0
+2013-01-03 -0.861849 -2.104569 -0.494929  5  2.0
+2013-01-04  0.721555 -0.706771 -1.039575  5  3.0
+2013-01-05 -0.424972  0.567020  0.276232  5  4.0
+2013-01-06 -0.673690  0.113648 -1.478427  5  5.0
+
+In [63] s = pd.Series([1,3,5,np.nan,6,8], index=dates).shift(2) #shift( period=1, freq=None, axis=0)使序列沿axis移位period位（默认为1，可为-1即反向）
+
+In [64]: s
+Out[64]: 
+2013-01-01    NaN
+2013-01-02    NaN
+2013-01-03    1.0
+2013-01-04    3.0
+2013-01-05    5.0
+2013-01-06    NaN
+Freq: D, dtype: float64
+
+df.sub(s, axis='index')   #把df按照index索引减去s的各项值，减nan即变为nan
+df.apply(np.cumsum)  #np.cumsum为累加，下一行与上一行现在值（即其与上上行相加后的值）相加； apply()是将函数应用到dataframe中，默认为axis=0
+pd.concat(pieces) #把pieces重新组合为一个
+pd.merge(left, right, on='key'，how='inner')  #合并left与right，以key为链接索引，默认为列名交集，how为合并方法，默认为inner即保留公共信息
+example：
+In [77]: left = pd.DataFrame({'key': ['foo', 'foo'], 'lval': [1, 2]})
+In [78]: right = pd.DataFrame({'key': ['foo', 'foo'], 'rval': [4, 5]})
+
+In [79]: left
+Out[79]: 
+   key  lval
+0  foo     1
+1  foo     2
+
+In [80]: right
+Out[80]: 
+   key  rval
+0  foo     4
+1  foo     5
+
+In [81]: pd.merge(left, right, on='key')
+Out[81]: 
+   key  lval  rval
+0  foo     1     4
+1  foo     1     5
+2  foo     2     4
+3  foo     2     5
+
+Another example that can be given is:
+
+In [82]: left = pd.DataFrame({'key': ['foo', 'bar'], 'lval': [1, 2]})
+In [83]: right = pd.DataFrame({'key': ['foo', 'bar'], 'rval': [4, 5]})
+
+In [84]: left
+Out[84]: 
+   key  lval
+0  foo     1
+1  bar     2
+
+In [85]: right
+Out[85]: 
+   key  rval
+0  foo     4
+1  bar     5
+
+In [86]: pd.merge(left, right, on='key')
+Out[86]: 
+   key  lval  rval
+0  foo     1     4
+1  bar     2     5
+
+
+df.groupby('A').sum()      #在df中以索引A中的值分组，然后分别应用sum()函数
+df.groupby(['A','B']).sum()    #先以索引A中的值分组，再在组里以索引B中值分组，以此类推
+In [95]: tuples = list(zip(*[['bar', 'bar', 'baz', 'baz',
+   ....:                      'foo', 'foo', 'qux', 'qux'],
+   ....:                     ['one', 'two', 'one', 'two',
+   ....:                      'one', 'two', 'one', 'two']]))     #zip为打包list中各位数据为tuple即成为('bar',one),('bar',two)等
+   ....: 
+
+In [96]: index = pd.MultiIndex.from_tuples(tuples, names=['first', 'second'])   #生成多维索引，不同层索引名字为name
+
+
+In [99]: df2
+Out[99]: 
+                     A         B
+first second                    
+bar   one     0.029399 -0.542108
+      two     0.282696 -0.087302
+baz   one    -1.575170  1.771208
+      two     0.816482  1.100230
+
+The stack() method “compresses” a level in the DataFrame’s columns.
+
+In [100]: stacked = df2.stack()   #stack即把列索引归化为行索引，成为最后level的行索引
+In [101]: stacked
+Out[101]: 
+first  second   
+bar    one     A    0.029399
+               B   -0.542108
+       two     A    0.282696
+               B   -0.087302
+baz    one     A   -1.575170
+               B    1.771208
+       two     A    0.816482
+               B    1.100230
+dtype: float64
+
+In [103]: stacked.unstack(1)    #unstack为stack的逆过程，不同参数代表针对不同行索引level的逆操作
+Out[103]: 
+second        one       two
+first                      
+bar   A  0.029399  0.282696
+      B -0.542108 -0.087302
+baz   A -1.575170  0.816482
+      B  1.771208  1.100230
+
+In [104]: stacked.unstack(0)
+Out[104]: 
+first          bar       baz
+second                      
+one    A  0.029399 -1.575170
+       B -0.542108  1.771208
+two    A  0.282696  0.816482
+       B -0.087302  1.100230
+
+
+In [106]: df
+Out[106]: 
+        A  B    C         D         E
+0     one  A  foo  1.418757 -0.179666
+1     one  B  foo -1.879024  1.291836
+2     two  C  foo  0.536826 -0.009614
+3   three  A  bar  1.006160  0.392149
+4     one  B  bar -0.029716  0.264599
+5     one  C  bar -1.146178 -0.057409
+6     two  A  foo  0.100900 -1.425638
+7   three  B  foo -1.035018  1.024098
+8     one  C  foo  0.314665 -0.106062
+9     one  A  bar -0.773723  1.824375
+10    two  B  bar -1.170653  0.595974
+11  three  C  bar  0.648740  1.167115
+
+We can produce pivot tables from this data very easily:
+
+In [107]: pd.pivot_table(df, values='D', index=['A', 'B'], columns=['C'])    #构建透视数据
+Out[107]: 
+C             bar       foo
+A     B                    
+one   A -0.773723  1.418757
+      B -0.029716 -1.879024
+      C -1.146178  0.314665
+three A  1.006160       NaN
+      B       NaN -1.035018
+      C  0.648740       NaN
+two   A       NaN  0.100900
+      B -1.170653       NaN
+      C       NaN  0.536826       
+
+
+In [108]: rng = pd.date_range('1/1/2012', periods=100, freq='S')    #这里以秒为单位设置时间采样
+In [109]: ts = pd.Series(np.random.randint(0, 500, len(rng)), index=rng)
+In [110]: ts.resample('5Min').sum()    #resample重新采样以5min为间隔，再进行求和
+Out[110]: 
+2012-01-01    25083
+Freq: 5T, dtype: int64
+
+ ts.head()    #默认为返回ts的前五行数据，可以根据输入参数改变行数
+ 
+prng = pd.period_range('1990Q1', '2000Q4', freq='Q-NOV')   #设置prng为时期类型（period），freq表示频率类型，'Q-NOV'表示这里频率是季度并以11月为季度末
+
+p = pd.Period('2007',freq='A-DEC')     # 2007年1月1日到2007年12月31日
+p.asfreq('M',how='start')       # 将评率为年(20070101-20071231)转换频率为月201701
+即 ：Period('2007-01', 'M')
+p.asfreq('M',how='end')         # 将评率为年(20070101-20071231)转换频率为月201712
+即 ：Period('2007-12', 'M')
+
+df["grade"] = df["raw_grade"].astype("category")   #设置df中grade索引的数据为对应raw_grade索引的category类
+df["grade"] = df["grade"].cat.set_categories(["very bad", "bad", "medium", "good", "very good"])  #设置几个有意义名字的不同分类类别
+df.sort_values(by="grade")    #按照grade索引对数据排序分类
