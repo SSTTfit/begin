@@ -1,0 +1,20 @@
+1.混淆矩阵 
+混淆矩阵是机器学习中总结分类模型预测结果的情形分析表，以矩阵形式将数据集中的记录按照真实的类别与分类模型作出的分类判断两个标准进行汇总。
+这个名字来源于它可以非常容易的表明多个类别是否有混淆（也就是一个class被预测成另一个class）
+横轴为预测值，纵轴为实际值。
+
+2.矩阵索引常用应用
+>>>b = np.array([1,0,2,1])
+   c = np.array([[1,1,1],[2,2,2],[0,1,0]])
+   c[b]
+array([[2, 2, 2],
+       [1, 1, 1],
+       [0, 1, 0],
+       [2, 2, 2]])   #按照b中值为索引在c中找相应位置的元素
+       
+3.sklearn.cluster.KMeans：
+model = KMeans(n_colors)
+labels = model.fit_predict(X)       #Returns:	labels : array, shape [n_samples,] 返回各数据项的所在簇，即其标签。
+colors = model.cluster_centers_      #cluster_centers_属性为每个簇中心的坐标，即各个中心的所有特征数值，返回array，
+                                      shape： [n_clusters, n_features]
+                                      
