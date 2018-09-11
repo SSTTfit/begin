@@ -1,0 +1,53 @@
+1.train_data[['Sex','Survived']].groupby(['Sex']).mean().plot.bar()   #绘制sex为x轴，survived平均值为y轴的柱状图（因为survived项为 
+                                                                     bool则均值为概率）
+
+2.fig, ax = plt.subplots(1, 2, figsize = (18, 8))
+sns.violinplot("Pclass", "Age", hue="Survived", data=train_data, split=True, ax=ax[0])
+ax[0].set_title('Pclass and Age vs Survived')
+ax[0].set_yticks(range(0, 110, 10))
+
+sns.violinplot("Sex", "Age", hue="Survived", data=train_data, split=True, ax=ax[1])
+ax[1].set_title('Sex and Age vs Survived')
+ax[1].set_yticks(range(0, 110, 10))
+
+plt.show()   #绘制多子图小提琴图，hue为分类依据
+
+3.plt.figure(figsize=(12,5))
+plt.subplot(121)
+train_data['Age'].hist(bins=70)
+plt.xlabel('Age')
+plt.ylabel('Num')
+
+plt.subplot(122)
+train_data.boxplot(column='Age', showfliers=False)
+plt.show()             #绘制直方图（bins代表箱数，如x轴为[50,54）的一个柱即为一个箱）和箱图
+
+
+
+4.bins = [0, 12, 18, 65, 100]
+train_data['Age_group'] = pd.cut(train_data['Age'], bins)   #用bins将数据分成多组，bins为list，每一组里的values在bins中该组两 
+                                                             个数之间，默认包含右侧数；bins为int代表在输入数据最小到最大范围内分 
+                                                             为bins个组，将values分到相应组。
+by_age = train_data.groupby('Age_group')['Survived'].mean()    
+>>>by_age 
+Age_group
+(0, 12]      0.506173
+(12, 18]     0.466667
+(18, 65]     0.364512
+(65, 100]    0.125000
+Name: Survived, dtype: float64
+
+5.train_data['Title'] = train_data['Name'].str.extract(' ([A-Za-z]+)\.', expand=False)  #将dataframe中str部分取出，按照匹配字来取
+
+6.plt.figure(figsize=(10,5))
+plt.subplot(121)
+sibsp_df['Survived'].value_counts().plot.pie(labels=['No Survived', 'Survived'], autopct = '%1.1f%%')
+plt.xlabel('sibsp')
+
+plt.subplot(122)
+no_sibsp_df['Survived'].value_counts().plot.pie(labels=['No Survived', 'Survived'], autopct = '%1.1f%%')
+plt.xlabel('no_sibsp')
+
+plt.show()     #绘制饼图，数据为dataframe中各value的数量，labels为图上各部分的标签
+
+7.sns.countplot('Embarked', hue='Survived', data=train_data)    #计数图，x轴为dataframe中的'Embarked'项
