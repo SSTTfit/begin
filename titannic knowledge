@@ -51,3 +51,20 @@ plt.xlabel('no_sibsp')
 plt.show()     #绘制饼图，数据为dataframe中各value的数量，labels为图上各部分的标签
 
 7.sns.countplot('Embarked', hue='Survived', data=train_data)    #计数图，x轴为dataframe中的'Embarked'项
+
+8.train_data['CabinLetter'] = pd.factorize(train_data['CabinLetter'])[0]   # pd.factorize用数字代表dataframe中不同value，返回两个元素：
+                                                                             化为数字后的array和包含不同value的array
+9.train_data['Fare_bin'] = pd.qcut(train_data['Fare'], 5)     #将数值数据分成几5个bin，train_data['Fare_bin']的value是  几个区间值
+
+10.x.mode()   #求dataframe中value最频繁的值，有两个则array中有两个
+
+11.combined_train_test['Title'] = combined_train_test['Name'].map(lambda x: re.compile(", (.*?)\.").findall(x)[0])
+                                 #通过re.compile（）.findall（x）[0]取出x字符串value中与正则表达式相匹配的内容。
+12.title_Dict = {}
+title_Dict.update(dict.fromkeys(['Capt', 'Col', 'Major', 'Dr', 'Rev'], 'Officer'))   #构建dict，(，)中前面是key,后面是value。   
+
+13.combined_train_test['Fare'] = combined_train_test[['Fare']].fillna(combined_train_test.groupby('Pclass').transform(np.mean))
+                                                                   #dataframe.groupby('').transform(np.mean)，将np.mean应用到每个group中
+14.fare_bin_dummies_df = pd.get_dummies(combined_train_test['Fare_bin_id']).rename(columns=lambda x: 'Fare_' + str(x))
+                                                             #通过rename（）来重命名get_dummies后的各column
+                                                             
