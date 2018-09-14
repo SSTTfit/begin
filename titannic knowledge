@@ -64,7 +64,32 @@ plt.show()     #绘制饼图，数据为dataframe中各value的数量，labels�
 title_Dict.update(dict.fromkeys(['Capt', 'Col', 'Major', 'Dr', 'Rev'], 'Officer'))   #构建dict，(，)中前面是key,后面是value。   
 
 13.combined_train_test['Fare'] = combined_train_test[['Fare']].fillna(combined_train_test.groupby('Pclass').transform(np.mean))
-                                                                   #dataframe.groupby('').transform(np.mean)，将np.mean应用到每个group中
+                        #dataframe.groupby('').transform(np.mean)，将np.mean应用到每个group中不同group的value填入不同均值，与.mean()
+                        不同（它只能求每组的平均值的list而这里是求出一个dataframe），fillna()的参数可以是scalar, dict, Series, or DataFrame。
+                                                             
 14.fare_bin_dummies_df = pd.get_dummies(combined_train_test['Fare_bin_id']).rename(columns=lambda x: 'Fare_' + str(x))
                                                              #通过rename（）来重命名get_dummies后的各column
-                                                             
+15.combined_train_test['Pclass_Fare_Category'] = combined_train_test.apply(pclass_fare_category, args=(
+    Pclass1_mean_fare, Pclass2_mean_fare, Pclass3_mean_fare), axis=1)       #对combined_train_test应用函数，函数参数为该df以及args中的内容
+
+16.>>> le = preprocessing.LabelEncoder()
+>>> le.fit(["paris", "paris", "tokyo", "amsterdam"])    #制定label表
+LabelEncoder()
+>>> list(le.classes_)       
+['amsterdam', 'paris', 'tokyo']
+>>> le.transform(["tokyo", "tokyo", "paris"])        #将（）内根据label表求出索引值表
+array([2, 2, 1]...)
+>>> list(le.inverse_transform([2, 2, 1]))             #逆转变
+['tokyo', 'tokyo', 'paris']      
+
+17.Correlation = pd.DataFrame(combined_train_test[
+    ['Embarked', 'Sex', 'Title', 'Name_length', 'Family_Size', 'Family_Size_Category','Fare', 'Fare_bin_id', 'Pclass', 
+     'Pclass_Fare_Category', 'Age', 'Ticket_Letter', 'Cabin']])    #将想要观察特征相关性的特征列成df
+colormap = plt.cm.viridis
+plt.figure(figsize=(14,12))
+plt.title('Pearson Correlation of Features', y=1.05, size=15)
+sns.heatmap(Correlation.astype(float).corr(),linewidths=0.1,vmax=1.0, square=True, cmap=colormap, linecolor='white', annot=True)
+            #绘制热度图，corr（）为求相关系数矩阵，
+18.scale_age_fare = preprocessing.StandardScaler().fit(combined_train_test[['Age','Fare', 'Name_length']])
+combined_train_test[['Age','Fare', 'Name_length']] = scale_age_fare.transform(combined_train_test[['Age','Fare', 'Name_length']])
+                                                                   #正则化，scale value
